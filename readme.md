@@ -19,3 +19,5 @@ See [here](https://github.com/Sifchain/sifnode/tree/master/docs/chainOps/k8s/REA
 ## Additional Resources
 
 Feel free to ask questions on Discord [here](https://discord.com/invite/zZTYnNG).
+
+[![SifDocker Image Build and Publish](https://github.com/Sifchain/sifnode/actions/workflows/sifdocker.yml/badge.svg?branch=sifdocker)](https://github.com/Sifchain/sifnode/actions/workflows/sifdocker.yml)

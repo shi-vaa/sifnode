@@ -1,0 +1,11 @@
+syntax = "proto3";
+package sifnode.ethbridge.v1;
+
+import "gogoproto/gogo.proto";
+import "sifnode/ethbridge/v1/erc20.proto";
+
+option go_package = "github.com/Sifchain/sifnode/x/coinmetadata/types";
+
+message CoinMetadata {
+  oneof Metadata { Erc20Metadata erc20metadata = 1; }
+}

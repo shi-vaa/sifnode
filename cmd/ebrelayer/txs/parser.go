@@ -2,6 +2,7 @@ package txs
 
 import (
 	"errors"
+	"github.com/Sifchain/sifnode/cmd/ebrelayer/relayer"
 	"log"
 	"math/big"
 	"strings"
@@ -22,7 +23,7 @@ const (
 )
 
 // EthereumEventToEthBridgeClaim parses and packages an Ethereum event struct with a validator address in an EthBridgeClaim msg
-func EthereumEventToEthBridgeClaim(valAddr sdk.ValAddress, event types.EthereumEvent, sugaredLogger *zap.SugaredLogger) (ethbridge.EthBridgeClaim, error) {
+func EthereumEventToEthBridgeClaim(valAddr sdk.ValAddress, event types.EthereumEvent, symbolTranslator relayer.SymbolTranslator, sugaredLogger *zap.SugaredLogger) (ethbridge.EthBridgeClaim, error) {
 	witnessClaim := ethbridge.EthBridgeClaim{}
 
 	sugaredLogger.Debug("event", event)

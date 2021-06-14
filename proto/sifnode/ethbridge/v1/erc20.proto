@@ -1,0 +1,13 @@
+syntax = "proto3";
+package sifnode.ethbridge.v1;
+
+import "gogoproto/gogo.proto";
+import "sifnode/ethbridge/v1/types.proto";
+
+option go_package = "github.com/Sifchain/sifnode/x/ethbridge/types";
+
+message Erc20Metadata {
+  string name = 1;
+  string symbol = 2;
+  uint32 decimals = 3;
+}

@@ -23,3 +23,8 @@ func TestNewSymbolTranslatorFromJsonBytes(t *testing.T) {
 	assert.Equal(t, x.SifchainToEthereum("verbatim"), "verbatim")
 	assert.Equal(t, x.EthereumToSifchain("verbatim"), "verbatim")
 }
+
+func TestNewSymbolTranslator(t *testing.T) {
+	s := NewSymbolTranslator()
+	assert.Equal(t, s.SifchainToEthereum("something"), "something")
+}

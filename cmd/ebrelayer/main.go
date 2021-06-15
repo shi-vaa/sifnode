@@ -228,7 +228,7 @@ func RunInitRelayerCmd(cmd *cobra.Command, args []string) error {
 	waitForAll.Add(2)
 	txFactory := tx.NewFactoryCLI(cliContext, cmd.Flags())
 	go ethSub.Start(txFactory, &waitForAll, symbolTranslator)
-	go cosmosSub.Start(&waitForAll)
+	go cosmosSub.Start(&waitForAll, symbolTranslator)
 	waitForAll.Wait()
 
 	return nil
@@ -294,7 +294,7 @@ func buildSymbolTranslator(flags *flag.FlagSet) (*txs.SymbolTranslator, error) {
 	filename, err := flags.GetString(ebrelayertypes.FlagSymbolTranslatorFile)
 	// If FlagSymbolTranslatorFile isn't specified, just use an empty SymbolTranslator
 	if err != nil || filename == "" {
-		return &txs.SymbolTranslator{}, nil
+		return txs.NewSymbolTranslator(), nil
 	}
 
 	symbolTranslator, err := txs.NewSymbolTranslatorFromJsonFile(filename)

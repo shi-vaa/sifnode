@@ -2,14 +2,12 @@ package txs
 
 import (
 	"errors"
-	"log"
-	"math/big"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"go.uber.org/zap"
+	"log"
+	"math/big"
 
 	"github.com/Sifchain/sifnode/cmd/ebrelayer/types"
 	ethbridge "github.com/Sifchain/sifnode/x/ethbridge/types"
@@ -21,7 +19,7 @@ const (
 )
 
 // EthereumEventToEthBridgeClaim parses and packages an Ethereum event struct with a validator address in an EthBridgeClaim msg
-func EthereumEventToEthBridgeClaim(valAddr sdk.ValAddress, event types.EthereumEvent, symbolTranslator *SymbolTranslator, sugaredLogger *zap.SugaredLogger) (ethbridge.EthBridgeClaim, error) {
+func EthereumEventToEthBridgeClaim(valAddr sdk.ValAddress, event types.EthereumEvent, sugaredLogger *zap.SugaredLogger) (ethbridge.EthBridgeClaim, error) {
 	witnessClaim := ethbridge.EthBridgeClaim{}
 
 	sugaredLogger.Debug("event", event)
@@ -78,7 +76,7 @@ func EthereumEventToEthBridgeClaim(valAddr sdk.ValAddress, event types.EthereumE
 }
 
 // BurnLockEventToCosmosMsg parses data from a Burn/Lock event witnessed on Cosmos into a CosmosMsg struct
-func BurnLockEventToCosmosMsg(claimType types.Event, attributes []abci.EventAttribute, sugaredLogger *zap.SugaredLogger) (types.CosmosMsg, error) {
+func BurnLockEventToCosmosMsg(claimType types.Event, attributes []abci.EventAttribute, symbolTranslator *SymbolTranslator, sugaredLogger *zap.SugaredLogger) (types.CosmosMsg, error) {
 	var cosmosSender []byte
 	var cosmosSenderSequence *big.Int
 	var ethereumReceiver common.Address
@@ -117,18 +115,7 @@ func BurnLockEventToCosmosMsg(claimType types.Event, attributes []abci.EventAttr
 			ethereumReceiver = common.HexToAddress(val)
 		case types.Symbol.String():
 			attributeNumber++
-			// TODO ibc symbols need better definition here
-			if claimType == types.MsgBurn && len(val) < 15 {
-				if !strings.Contains(val, defaultSifchainPrefix) {
-					// log.Printf("Can only relay burns of '%v' prefixed coins", defaultSifchainPrefix)
-					sugaredLogger.Errorw("only relay burns prefixed coins", "coin symbol", val)
-					return types.CosmosMsg{}, errors.New("can only relay burns of '%v' prefixed coins" + defaultSifchainPrefix)
-				}
-				res := strings.SplitAfter(val, defaultSifchainPrefix)
-				symbol = strings.Join(res[1:], "")
-			} else {
-				symbol = val
-			}
+			symbol = symbolTranslator.EthereumToSifchain(val)
 		case types.Amount.String():
 			attributeNumber++
 			tempAmount, ok := sdk.NewIntFromString(val)

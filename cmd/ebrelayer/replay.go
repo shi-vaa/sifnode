@@ -79,7 +79,7 @@ func RunReplayEthereumCmd(cmd *cobra.Command, args []string) error {
 }
 
 // RunReplayCosmosCmd executes initRelayerCmd
-func RunReplayCosmosCmd(_ *cobra.Command, args []string) error {
+func RunReplayCosmosCmd(cmd *cobra.Command, args []string) error {
 	// Validate and parse arguments
 	if len(strings.Trim(args[0], "")) == 0 {
 		return errors.Errorf("invalid [tendermint-node]: %s", args[0])
@@ -122,6 +122,11 @@ func RunReplayCosmosCmd(_ *cobra.Command, args []string) error {
 	}
 	sugaredLogger := logger.Sugar()
 
+	symbolTranslator, err := buildSymbolTranslator(cmd.Flags())
+	if err != nil {
+		return err
+	}
+
 	key, err := txs.LoadPrivateKey()
 	if err != nil {
 		log.Fatalf("failed to load ETHEREUM_PRIVATE_KEY")
@@ -130,13 +135,13 @@ func RunReplayCosmosCmd(_ *cobra.Command, args []string) error {
 	// Initialize new Cosmos event listener
 	cosmosSub := relayer.NewCosmosSub(tendermintNode, web3Provider, contractAddress, key, nil, sugaredLogger)
 
-	cosmosSub.Replay(fromBlock, toBlock, ethFromBlock, ethToBlock)
+	cosmosSub.Replay(symbolTranslator, fromBlock, toBlock, ethFromBlock, ethToBlock)
 
 	return nil
 }
 
 // RunListMissedCosmosEventCmd executes initRelayerCmd
-func RunListMissedCosmosEventCmd(_ *cobra.Command, args []string) error {
+func RunListMissedCosmosEventCmd(cmd *cobra.Command, args []string) error {
 	// Validate and parse arguments
 	if len(strings.Trim(args[0], "")) == 0 {
 		return errors.Errorf("invalid [tendermint-node]: %s", args[0])
@@ -169,10 +174,15 @@ func RunListMissedCosmosEventCmd(_ *cobra.Command, args []string) error {
 	}
 	sugaredLogger := logger.Sugar()
 
+	symbolTranslator, err := buildSymbolTranslator(cmd.Flags())
+	if err != nil {
+		return err
+	}
+
 	// Initialize new Cosmos event listener
 	listMissedCosmosEvent := relayer.NewListMissedCosmosEvent(tendermintNode, web3Provider, contractAddress, relayerEthereumAddress, days, sugaredLogger)
 
-	listMissedCosmosEvent.ListMissedCosmosEvent()
+	listMissedCosmosEvent.ListMissedCosmosEvent(symbolTranslator)
 
 	return nil
 }

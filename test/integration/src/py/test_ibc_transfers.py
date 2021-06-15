@@ -108,4 +108,4 @@ def test_lock_ibc_coins(
     test_utilities.wait_for_success(wait_for_enough_tokens)
 
     logging.info("send FEEDFACE back to sifchain")
-    burn_lock_functions.transfer_ethereum_to_sifchain(request)
+    burn_lock_functions.transfer_ethereum_to_sifchain(request, 10)

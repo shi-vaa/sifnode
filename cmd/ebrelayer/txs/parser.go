@@ -18,7 +18,6 @@ import (
 const (
 	nullAddress           = "0x0000000000000000000000000000000000000000"
 	defaultSifchainPrefix = "c"
-	defaultEthereumPrefix = "e"
 )
 
 // EthereumEventToEthBridgeClaim parses and packages an Ethereum event struct with a validator address in an EthBridgeClaim msg
@@ -47,23 +46,12 @@ func EthereumEventToEthBridgeClaim(valAddr sdk.ValAddress, event types.EthereumE
 	// Sender type casting (address.common -> string)
 	tokenContractAddress := ethbridge.NewEthereumAddress(event.Token.Hex())
 
-	// Symbol formatted to lowercase
-	symbol := strings.ToLower(event.Symbol)
+	symbol := event.Symbol
 
 	switch event.ClaimType {
 	case ethbridge.ClaimType_CLAIM_TYPE_LOCK:
 		if symbol == "eth" && !isZeroAddress(event.Token) {
 			return witnessClaim, errors.New("symbol \"eth\" must have null address set as token address")
-		}
-	case ethbridge.ClaimType_CLAIM_TYPE_BURN:
-		// TODO ibc the symbol manipulation is wrong
-		if len(symbol) < 15 {
-			if !strings.Contains(symbol, defaultEthereumPrefix) {
-				log.Printf("Can only relay burns of '%v' prefixed tokens", defaultEthereumPrefix)
-				return witnessClaim, errors.New("symbol of burn token must start with prefix")
-			}
-			res := strings.SplitAfter(symbol, defaultEthereumPrefix)
-			symbol = strings.Join(res[1:], "")
 		}
 	}
 

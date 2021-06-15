@@ -2,7 +2,6 @@ package txs
 
 import (
 	"errors"
-	"github.com/Sifchain/sifnode/cmd/ebrelayer/relayer"
 	"log"
 	"math/big"
 	"strings"
@@ -23,7 +22,7 @@ const (
 )
 
 // EthereumEventToEthBridgeClaim parses and packages an Ethereum event struct with a validator address in an EthBridgeClaim msg
-func EthereumEventToEthBridgeClaim(valAddr sdk.ValAddress, event types.EthereumEvent, symbolTranslator relayer.SymbolTranslator, sugaredLogger *zap.SugaredLogger) (ethbridge.EthBridgeClaim, error) {
+func EthereumEventToEthBridgeClaim(valAddr sdk.ValAddress, event types.EthereumEvent, symbolTranslator *SymbolTranslator, sugaredLogger *zap.SugaredLogger) (ethbridge.EthBridgeClaim, error) {
 	witnessClaim := ethbridge.EthBridgeClaim{}
 
 	sugaredLogger.Debug("event", event)
@@ -58,7 +57,7 @@ func EthereumEventToEthBridgeClaim(valAddr sdk.ValAddress, event types.EthereumE
 		}
 	case ethbridge.ClaimType_CLAIM_TYPE_BURN:
 		// TODO ibc the symbol manipulation is wrong
-		if (len(symbol) < 15) {
+		if len(symbol) < 15 {
 			if !strings.Contains(symbol, defaultEthereumPrefix) {
 				log.Printf("Can only relay burns of '%v' prefixed tokens", defaultEthereumPrefix)
 				return witnessClaim, errors.New("symbol of burn token must start with prefix")

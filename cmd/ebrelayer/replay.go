@@ -64,11 +64,16 @@ func RunReplayEthereumCmd(cmd *cobra.Command, args []string) error {
 	}
 	sugaredLogger := logger.Sugar()
 
+	symbolTranslator, err := buildSymbolTranslator(cmd.Flags())
+	if err != nil {
+		return err
+	}
+
 	ethSub := relayer.NewEthereumSub(cliContext, tendermintNode, validatorMoniker, web3Provider,
 		contractAddress, nil, nil, sugaredLogger)
 
 	txFactory := tx.NewFactoryCLI(cliContext, cmd.Flags())
-	ethSub.Replay(txFactory, fromBlock, toBlock, cosmosFromBlock, cosmosToBlock)
+	ethSub.Replay(txFactory, fromBlock, toBlock, cosmosFromBlock, cosmosToBlock, symbolTranslator)
 
 	return nil
 }

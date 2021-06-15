@@ -1,4 +1,4 @@
-package relayer
+package txs
 
 import (
 	"encoding/json"
@@ -29,8 +29,8 @@ func NewSymbolTranslatorFromJsonFile(filename string) (*SymbolTranslator, error)
 }
 
 func NewSymbolTranslatorFromJsonBytes(jsonContents []byte) (*SymbolTranslator, error) {
-	var symbolMap map[string]string
-	err := json.Unmarshal(jsonContents, symbolMap)
+	var symbolMap map[string]interface{}
+	err := json.Unmarshal(jsonContents, &symbolMap)
 	if err != nil {
 		return nil, err
 	}
